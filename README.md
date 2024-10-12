@@ -1,5 +1,5 @@
 
-# Mines Game
+# Casino Game - Mines Game
 
 This is a simple Mines game built with React. The game allows users to place bets, uncover fields, and avoid mines to win money. The balance and bet amounts are managed using React state, and the balance is persisted using localStorage.
 
@@ -14,7 +14,7 @@ This is a simple Mines game built with React. The game allows users to place bet
 
 1.  Clone the repository
     ```
-    git  clone  https://github.com/mmacius/mines-game.git
+    git  clone  https://github.com/mmacius/mines.git
     
     cd  mines-game
     ```
