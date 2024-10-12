@@ -13,29 +13,48 @@ function App() {
 
     const [started, setStarted] = useState(false);
     const [buttonText, setButtonText] = useState("Start Game");
-    const [startFunction, setStartFunction] = useState(() => startGame);
 
     const [winAmount, setWinAmount] = useState(0);
     const [multiplier, setMultiplier] = useState(0);
 
-    function startGame() {
+    const createTab = useCallback((amount) => {
+        const newMines = Array(25).fill(0);
+        const bombIndices = new Set();
+        while (bombIndices.size < amount) {
+            const randomI = Math.floor(Math.random() * newMines.length);
+            bombIndices.add(randomI);
+        }
+
+        bombIndices.forEach(i => {
+            newMines[i] = 1;
+        });
+
+        setMines(newMines);
+    }, []);
+
+    const startGame = useCallback(() => {
         if (balance < bet) {
             Swal.fire({
                 title: 'Error!',
                 text: 'You don\'t have enough funds in your account',
                 icon: 'error',
                 confirmButtonText: 'Ok'
-            })
+            });
         } else {
             setBalance(prevBalance => prevBalance - bet);
             setStarted(true);
             setButtonText("End Game");
+            console.log("Starting game with mines:", minesAmount);
             createTab(minesAmount);
+            console.log(minesAmount)
             setDiscoveredFields(Array(25).fill(false));
             setMultiplier(0);
             setClickedFields([]);
         }
-    };
+    }, [balance, bet, minesAmount, createTab]);
+
+    const [startFunction, setStartFunction] = useState(() => startGame);
+
 
     const endGame = useCallback(() => {
         if (started) {
@@ -64,14 +83,14 @@ function App() {
         }
     }, [started, winAmount, multiplier]);
 
+    const changeMines = useCallback((e) => {
+        const newMinesAmount = parseInt(e.target.value);
+        setMinesAmount(newMinesAmount);
+        console.log("Updated mines amount:", newMinesAmount);
+    }, []);
+
     const uncoverField = (index) => {
         if (!started) {
-            Swal.fire({
-                title: 'Error!',
-                text: 'You need to start the game first',
-                icon: 'error',
-                confirmButtonText: 'Ok'
-            });
             return;
         } else if (clickedFields.includes(index)) {
             return;
@@ -102,21 +121,6 @@ function App() {
                 }
             }
         }
-    };
-
-    const createTab = (minesAmount) => {
-        const newMines = Array(25).fill(0);
-        const bombIndices = new Set();
-        while (bombIndices.size < minesAmount) {
-            const randomI = Math.floor(Math.random() * newMines.length);
-            bombIndices.add(randomI);
-        }
-
-        bombIndices.forEach(i => {
-            newMines[i] = 1;
-        });
-
-        setMines(newMines);
     };
 
     const changeBet = (value) => {
@@ -152,10 +156,6 @@ function App() {
         }
     };
 
-    const changeMines = (e) => {
-        setMinesAmount(e.target.value);
-    }
-
     useEffect(() => {
         localStorage.setItem("balance", balance);
     }, [balance]);
@@ -171,7 +171,7 @@ function App() {
         } else {
             setStartFunction(() => endGame);
         }
-    }, [started, endGame]);
+    }, [started, startGame, endGame]);
 
 
     return (
@@ -201,7 +201,7 @@ function App() {
                     <section>
                         <section>
                             <h1>Mines Count <span>{minesAmount}</span></h1>
-                            <input className={started ? "disable" : ""} type="range" min={1} max={24} value={minesAmount} onChange={changeMines} />
+                            <input className={started ? "disable" : ""} type="range" min={1} max={24} value={minesAmount} onChange={changeMines}/>
                         </section>
                         <section>
                             <h1>Your Balance</h1>
