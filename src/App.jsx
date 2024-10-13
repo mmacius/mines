@@ -44,9 +44,7 @@ function App() {
             setBalance(prevBalance => prevBalance - bet);
             setStarted(true);
             setButtonText("End Game");
-            console.log("Starting game with mines:", minesAmount);
             createTab(minesAmount);
-            console.log(minesAmount)
             setDiscoveredFields(Array(25).fill(false));
             setMultiplier(0);
             setClickedFields([]);
@@ -86,7 +84,6 @@ function App() {
     const changeMines = useCallback((e) => {
         const newMinesAmount = parseInt(e.target.value);
         setMinesAmount(newMinesAmount);
-        console.log("Updated mines amount:", newMinesAmount);
     }, []);
 
     const uncoverField = (index) => {
