@@ -54,12 +54,14 @@ function App() {
     const [startFunction, setStartFunction] = useState(() => startGame);
 
 
-    const endGame = useCallback(() => {
+    const endGame = useCallback((value) => {
         if (started) {
             setStarted(false);
             setStartFunction(() => startGame);
             setButtonText("Start Game");
-            setBalance(prevBalance => prevBalance + winAmount);
+
+            value !== "lose" ? setBalance(prevBalance => prevBalance + winAmount) : setBalance(balance);
+
             if (winAmount > 0) {
                 Swal.fire({
                     title: 'Win!',
@@ -100,7 +102,7 @@ function App() {
             });
 
             if (mines[index] === 1) {
-                endGame();
+                endGame("lose");
                 setDiscoveredFields(Array(25).fill(true));
                 Swal.fire({
                     title: 'Game Over!',
@@ -198,7 +200,7 @@ function App() {
                     <section>
                         <section>
                             <h1>Mines Count <span>{minesAmount}</span></h1>
-                            <input className={started ? "disable" : ""} type="range" min={1} max={24} value={minesAmount} onChange={changeMines}/>
+                            <input className={started ? "disable" : ""} type="range" min={1} max={24} value={minesAmount} onChange={changeMines} />
                         </section>
                         <section>
                             <h1>Your Balance</h1>
